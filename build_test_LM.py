@@ -94,20 +94,19 @@ def classify(line, model):
     """
     four_grams = line_to_4grams(line)
     log_prob = dict() # multiplying probabilities can lead to very small numbers, which are often not handled well by computers. so we sum up log probabilities instead. 
-    to_skip = set()
+    unseen_4grams = dict()
     for lang in model.keys():
+        unseen_4grams[lang] = set()
         for four_gram in four_grams:
             if not (four_gram in model[lang].keys()):
-                to_skip.add(four_gram)
+                unseen_4grams[lang].add(four_gram)
 
     for lang in model.keys():
         log_prob[lang] = 0
         count = model[lang][COUNT_KEY]
         for four_gram in four_grams:
-            if four_gram in to_skip:
-                continue
-            four_gram_count = model[lang].get(four_gram, 0)
-            log_prob[lang] += log(four_gram_count/count)
+            four_gram_count = model[lang].get(four_gram, 1) # default value of 1 due to add-1 smoothing
+            log_prob[lang] += log(four_gram_count/(count+len(unseen_4grams[lang])))
     return max(log_prob, key=log_prob.get) # logarithm functions are increasing so we can still take the max
 
 
