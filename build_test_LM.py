@@ -83,14 +83,14 @@ def test_LM(in_file, out_file, LM):
     lines = read_lines(in_file)
     output_str = ''
     for line in lines:
-        lang = classify(line, LM)
+        lang = classify_smooth_unseen(line, LM)
         output_str += f'{lang} {line}\n'
     with open(out_file, "w") as f:
         f.write(output_str)
 
-def classify(line, model):
+def classify_smooth_unseen(line, model):
     """
-    classifies a given string according to a language model.
+    classifies a given string according to a language model. applies add-1 smoothing even to 4grams that have not been seen before in the corpus.
     """
     four_grams = line_to_4grams(line)
     log_prob = dict() # multiplying probabilities can lead to very small numbers, which are often not handled well by computers. so we sum up log probabilities instead. 

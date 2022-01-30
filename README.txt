@@ -1,15 +1,16 @@
 things to note:
 
-try padding front and back and not padding, see which is better. is not too hard. can justify it easily too. 
+things to try.
+	try padding front and back and not padding, see which is better. is not too hard. can justify it easily too. 
+	remove punct
+	all one case
+	digits to 1
 
-instruction is to multiply probabilities. so it searches up each fourgram and tkaes thep robability and multiples. fourgrams which do not exist in the language are ignored and skipped, which is as good as multiplying by 1. actually, this is counterintuitive cuz fourgrams that do not exist should result in multiplication by v small number, not 1. but im following instrns. 
 
-likewises, instrn says multiply probabilities. proper usage of fourgrams involves multiplying CONDIRTIONAL probabilities. but im following instrns.
 
-talk about how you handle the small multiplications.
+instrn says multiply probabilities. proper usage of fourgrams involves multiplying CONDIRTIONAL probabilities. but im following instrns.
 
-add1 smoothing normally smoothes out ALL ngrams. but instrns say all observed ngrams. so we don't smooth any that do not appear in the training corpus. 
-
+talk about how you handle the small multiplications. log summin.
 
 code is minally commented cuz of functions and var names.
 
