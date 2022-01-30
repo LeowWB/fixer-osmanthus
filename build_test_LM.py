@@ -13,13 +13,14 @@ from math import log
 
 COUNT_KEY = "_count"
 
-def build_LM(in_file):
+def build_LM(in_file, pad=True, homogenize_digits=True, no_punc=True, lowercase=True):
     """
     build language models for each label
     each line in in_file contains a label and a string separated by a space
     """
     print("building language models...")
     lines = read_lines(in_file)
+    lines = process_lines(lines, pad, homogenize_digits, no_punc, lowercase)
     train_set = input_lines_to_train_set(lines)
     model = build_model(train_set)
     return model
@@ -73,6 +74,20 @@ def input_lines_to_train_set(lines):
         features = line[len(label)+1:]
         train_set.append((label,features))
     return train_set
+
+def process_lines(lines, pad, homogenize_digits, no_punc, lowercase):
+    for i in range(len(lines)):
+        if no_punc:
+            lines[i] = re.sub(r'[^\s\w]', '', lines[i])
+        if lowercase:
+            lines[i] = lines[i].lower()
+        if homogenize_digits:
+            lines[i] = re.sub(r'[\d]+', '1', lines[i])
+        lines[i] = lines[i].strip()
+        if pad:
+            lines[i] = f'   {lines[i]}   '
+
+    return lines
 
 def read_lines(in_file):
     """

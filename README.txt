@@ -6,6 +6,7 @@ things to try.
 	all one case
 	digits to 1
 
+	also talka bout ur add1 to observed things in the test query 
 
 
 instrn says multiply probabilities. proper usage of fourgrams involves multiplying CONDIRTIONAL probabilities. but im following instrns.
