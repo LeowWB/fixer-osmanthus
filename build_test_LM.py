@@ -29,12 +29,24 @@ def build_model(train_set):
     builds the model from a training set
     """
     model = dict()
+    vocab = set()
+    
+    # this loop will build the initial table and smooth the observed entries
     for datum in train_set:
         label, features = datum
         four_grams = line_to_4grams(features)
         for four_gram in four_grams:
+            vocab.add(four_gram)
             model[label] = model.get(label, dict())
             model[label][four_gram] = model[label].get(four_gram, 1) + 1 # default value of 1 due to add-1 smoothing.
+    
+    # this loop does smoothing for 4grams in the vocabulary that were not observed in each language
+    for four_gram in vocab:
+        for label in model.keys():
+            if not (four_gram in model[label].keys()):
+                model[label][four_gram] = 1 # default value of 1 due to add-1 smoothing
+
+    # this loop counts the number of occurrences for each language in total
     for label in model.keys():
         total = 0
         for four_gram in model[label].keys():
