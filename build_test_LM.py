@@ -100,7 +100,7 @@ def read_lines(in_file):
         lines[i] = lines[i].strip()
     return lines
 
-def test_LM(in_file, out_file, LM):
+def test_LM(in_file, out_file, LM, smooth_unseen=False):
     """
     test the language models on new strings
     each line of in_file contains a string
@@ -110,7 +110,10 @@ def test_LM(in_file, out_file, LM):
     lines = read_lines(in_file)
     output_str = ''
     for line in lines:
-        lang = classify_ignore_unseen(line, LM)
+        if smooth_unseen:
+            lang = classify_smooth_unseen(line, LM)
+        else:
+            lang = classify_ignore_unseen(line, LM)
         output_str += f'{lang} {line}\n'
     with open(out_file, "w") as f:
         f.write(output_str)
