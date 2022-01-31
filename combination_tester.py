@@ -14,8 +14,8 @@ for pad in [True, False]:
                     print(f'pad={pad}, homogenize_digits={homogenize_digits}, no_punc={no_punc}, lowercase={lowercase}, smooth_unseen={smooth_unseen}')
 
                     LM = build_LM(input_file_b, pad, homogenize_digits, no_punc, lowercase)
-                    test_LM(input_file_t, output_file, LM, smooth_unseen)
+                    test_LM(input_file_t, output_file, LM, pad, homogenize_digits, no_punc, lowercase, smooth_unseen)
                     os.system('python3 eval.py input.predict.txt input.correct.txt')
                     
-                    test_LM(input_file_u, output_file, LM, smooth_unseen)
+                    test_LM(input_file_u, output_file, LM, pad, homogenize_digits, no_punc, lowercase, smooth_unseen)
                     os.system('python3 eval.py input.predict.txt input.train.txt')

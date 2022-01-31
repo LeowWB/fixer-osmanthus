@@ -11,7 +11,13 @@ from math import log
 
 COUNT_KEY = "_count"
 
-def build_LM(in_file, pad=True, homogenize_digits=True, no_punc=True, lowercase=True):
+DEFAULT_PAD = True
+DEFAULT_HOMOGENIZE_DIGITS = True
+DEFAULT_NO_PUNC = True
+DEFAULT_LOWERCASE = True
+DEFAULT_SMOOTH_UNSEEN = False
+
+def build_LM(in_file, pad=DEFAULT_PAD, homogenize_digits=DEFAULT_HOMOGENIZE_DIGITS, no_punc=DEFAULT_NO_PUNC, lowercase=DEFAULT_LOWERCASE):
     """
     build language models for each label
     each line in in_file contains a label and a string separated by a space
@@ -98,7 +104,7 @@ def read_lines(in_file):
         lines[i] = lines[i].strip()
     return lines
 
-def test_LM(in_file, out_file, LM, smooth_unseen=False):
+def test_LM(in_file, out_file, LM, pad=DEFAULT_PAD, homogenize_digits=DEFAULT_HOMOGENIZE_DIGITS, no_punc=DEFAULT_NO_PUNC, lowercase=DEFAULT_LOWERCASE, smooth_unseen=DEFAULT_SMOOTH_UNSEEN):
     """
     test the language models on new strings
     each line of in_file contains a string
@@ -106,6 +112,7 @@ def test_LM(in_file, out_file, LM, smooth_unseen=False):
     """
     print("testing language models...")
     lines = read_lines(in_file)
+    lines = process_lines(lines, pad, homogenize_digits, no_punc, lowercase)
     output_str = ''
     for line in lines:
         if smooth_unseen:
