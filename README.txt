@@ -26,25 +26,29 @@ this assignment.
 
 == General Notes about this assignment ==
 
-This program performs all the requirements of the assignment problem statement. More specifically, it constructs 4-grams from the itraining input text, and uses the 4-grams to predict the language of the test input. As some parts of the problem statement are open to interpretation or experimentation, these will be elaborated on below.
+This program performs all the requirements of the assignment problem statement. More specifically, it constructs 4-grams from the itraining input text, and uses the 4-grams to predict the language of the test input.  
 
-**The 4-gram units are characters**. Every 4-gram consists not of 4 tokens or 4 words, as per normal usage, but instead they consist of 4 characters. They are also treated using regular, **absolute probabilities**, and not conditional probabilities as per normal 4-gram usage. Because we are not considering context, this means that we will be multiplying very small probabilities. To ensure that we do not have computational rounding errors, we substitute probability multiplication with **log probability summing*, which gives an equivalent effect. Since the log function is an increasing function, we can still take the maximum to find out the most likely label. 
+As some parts of the problem statement are open to interpretation or experimentation, these will be elaborated on below.
+
+**The 4-gram units are characters**. Every 4-gram consists not of 4 tokens or 4 words, as per normal usage, but instead they consist of 4 characters which occur consecutively within the string. They are also treated using regular, **absolute probabilities**, and not conditional probabilities as per normal 4-gram usage. Because we are not considering context, this means that we will be multiplying very small probabilities. To ensure that we do not have computational rounding errors, we substitute probability multiplication with **log probability summing*, which gives an equivalent effect. Since the log function is an increasing function, we can still take the maximum to find out the most likely label - the string will hence be classified as the language with the highest log probability. There is one exception: when classifying a string as "other" language, we do not use probabilities. Instead we simply observe the set of all 4-grams within the string. **If more than half of the 4-grams in the string are not in our vocabulary, then we assume it to be "other" language**.
+ 
 The main functions of the program `build_LM` and `test_LM` also have a few possible options which are passed by arguments. To avoid changing the function signature, these have default values that will be used if no argument is provided; if an argument is provided, these values can be overridden. The default values were chosen to maximize the model's performance. These are the options:
 
-* `pad` (default:  
+* `pad` (default: True): determines whether the input strings are padded with characters at the start and end of the string. For our usage we use '@' as a character to represent the start and '^' to represent the end of a string. We choose to use these characters because they only occur in email addresses, mathematical equations, and kaomojis, and not in natural language. The intuition behind this option is that the model will be able to learn which characters are more likely to occur at the start and end of a sentence, which may be useful for prediction. 
+* `homogenize_digits` (default: True): if True, all numeric sequences (e.g. '12345') will be replaced by '1'. This is because, intuitively, the distribution of numeric sequences is the same regardless of language. As such we remove one variable which the model does not need to consider.
+* `no_punc` (default: False): determines whether punctuation characters are removed. The intuition is that punctuation does not convey much semantic meaning in natural language. 
+* `lowercase` (default: True): determines whether all characters are converted to lowercase. The intuition is that a Tamil string is still a Tamil string regardless of the letter casing, and the same is true for the other languages. As such changing all characters to lowercase allows the model to use less space, since it does not need to store uppercase characters.
+* `smooth_unseen` (default: False): if True, add-one smoothing will be applied to 4-grams which are not in the vocabulary, as long as they appear in the test string. 
 
-
-they were tested on train and test set and uh reuslts/  
-
-Give an overview of your program, describe the important algorithms/steps 
-in your program, and discuss your experiments in general.  A few paragraphs 
-are usually sufficient. talk about log probs too.
+The above default options were chosen after some testing. These options were shown to have perfect performance (100%) on both the test set and training set. 
 
 == Files included with this submission ==
 
-List the files in your submission here and provide a short 1 line
-description of each file.  Make sure your submission's files are named
-and formatted correctly.
+* `README.txt`: this file
+* `build_test_LM.py`: file from which the code is run
+* `build_test_LM_funcs.py`: actual code to build and test models
+* `combination_tester.py`: utility code for testing models with different combinations of options
+* `eval.py`: evaluation code
 
 == Statement of individual work ==
 
