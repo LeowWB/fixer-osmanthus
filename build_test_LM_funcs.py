@@ -9,8 +9,11 @@ import re
 import nltk
 from math import log
 
-COUNT_KEY = "_count"
+COUNT_KEY = '_count' # for dictionaries
 PAD_CHAR = '@' # we use this character to pad the start and end of each string
+OTHER_STRING = 'other' # classify as other
+OTHER_THRESHOLD = 0.5 # threshold for classifying as other
+EPSILON = 0.00001 # avoid division by 0
 
 DEFAULT_PAD = True
 DEFAULT_HOMOGENIZE_DIGITS = True
@@ -136,6 +139,10 @@ def classify_ignore_unseen(line, model):
             if not (four_gram in model[lang].keys()):
                 unseen_4grams.add(four_gram)
 
+    # we assume it's some alien language if there are many 4grams that we haven't seen before
+    if len(unseen_4grams) / (len(set(four_grams))+EPSILON) > OTHER_THRESHOLD:
+        return OTHER_STRING
+
     for lang in model.keys():
         log_prob[lang] = 0
         count = model[lang][COUNT_KEY]
@@ -143,7 +150,7 @@ def classify_ignore_unseen(line, model):
             if four_gram in unseen_4grams:
                 continue
             four_gram_count = model[lang][four_gram]
-            log_prob[lang] += log(four_gram_count/count)
+            log_prob[lang] += log(four_gram_count/(EPSILON+count))
     return max(log_prob, key=log_prob.get) # logarithm functions are increasing so we can still take the max
 
 def classify_smooth_unseen(line, model):
@@ -153,16 +160,22 @@ def classify_smooth_unseen(line, model):
     four_grams = line_to_4grams(line)
     log_prob = dict() # multiplying probabilities can lead to very small numbers, which are often not handled well by computers. so we sum up log probabilities instead. 
     unseen_4grams = dict()
+    unseen_4grams_set = set()
     for lang in model.keys():
         unseen_4grams[lang] = set()
         for four_gram in four_grams:
             if not (four_gram in model[lang].keys()):
                 unseen_4grams[lang].add(four_gram)
+                unseen_4grams_set.add(four_gram)
 
+    # we assume it's some alien language if there are many 4grams that we haven't seen before
+    if len(unseen_4grams_set) / (len(set(four_grams))+EPSILON) > OTHER_THRESHOLD:
+        return OTHER_STRING
+    
     for lang in model.keys():
         log_prob[lang] = 0
         count = model[lang][COUNT_KEY]
         for four_gram in four_grams:
             four_gram_count = model[lang].get(four_gram, 1) # default value of 1 due to add-1 smoothing
-            log_prob[lang] += log(four_gram_count/(count+len(unseen_4grams[lang])))
+            log_prob[lang] += log(four_gram_count/(EPSILON+count+len(unseen_4grams[lang])))
     return max(log_prob, key=log_prob.get) # logarithm functions are increasing so we can still take the max
