@@ -31,7 +31,10 @@ This program performs all the requirements of the assignment problem statement. 
 **The 4-gram units are characters**. Every 4-gram consists not of 4 tokens or 4 words, as per normal usage, but instead they consist of 4 characters. They are also treated using regular, **absolute probabilities**, and not conditional probabilities as per normal 4-gram usage. Because we are not considering context, this means that we will be multiplying very small probabilities. To ensure that we do not have computational rounding errors, we substitute probability multiplication with **log probability summing*, which gives an equivalent effect. Since the log function is an increasing function, we can still take the maximum to find out the most likely label. 
 The main functions of the program `build_LM` and `test_LM` also have a few possible options which are passed by arguments. To avoid changing the function signature, these have default values that will be used if no argument is provided; if an argument is provided, these values can be overridden. The default values were chosen to maximize the model's performance. These are the options:
 
-* `pad` (default: `True`): determines whether the strings are padded 
+* `pad` (default: `True`): determines whether the strings are padded with 
+
+
+they were tested on train and test set and uh reuslts/  
 
 Give an overview of your program, describe the important algorithms/steps 
 in your program, and discuss your experiments in general.  A few paragraphs 
