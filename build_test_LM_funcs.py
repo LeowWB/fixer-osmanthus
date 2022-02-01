@@ -10,6 +10,7 @@ import nltk
 from math import log
 
 COUNT_KEY = "_count"
+PAD_CHAR = '@' # we use this character to pad the start and end of each string
 
 DEFAULT_PAD = True
 DEFAULT_HOMOGENIZE_DIGITS = True
@@ -24,8 +25,7 @@ def build_LM(in_file, pad=DEFAULT_PAD, homogenize_digits=DEFAULT_HOMOGENIZE_DIGI
     """
     print("building language models...")
     lines = read_lines(in_file)
-    lines = process_lines(lines, pad, homogenize_digits, no_punc, lowercase)
-    train_set = input_lines_to_train_set(lines)
+    train_set = input_lines_to_train_set(lines, pad, homogenize_digits, no_punc, lowercase)
     model = build_model(train_set)
     return model
 
@@ -68,7 +68,7 @@ def line_to_4grams(line):
         four_grams.append(line[i:i+4])
     return four_grams
 
-def input_lines_to_train_set(lines):
+def input_lines_to_train_set(lines, pad, homogenize_digits, no_punc, lowercase):
     """
     converts the lines from the input training corpus into a training set with (label, features) pairs.
     """
@@ -76,22 +76,22 @@ def input_lines_to_train_set(lines):
     for line in lines:
         label = line.split()[0]
         features = line[len(label)+1:]
+        features = process_line(features, pad, homogenize_digits, no_punc, lowercase)
         train_set.append((label,features))
     return train_set
 
-def process_lines(lines, pad, homogenize_digits, no_punc, lowercase):
-    for i in range(len(lines)):
-        if no_punc:
-            lines[i] = re.sub(r'[^\s\w]', '', lines[i])
-        if lowercase:
-            lines[i] = lines[i].lower()
-        if homogenize_digits:
-            lines[i] = re.sub(r'[\d]+', '1', lines[i])
-        lines[i] = lines[i].strip()
-        if pad:
-            lines[i] = f'   {lines[i]}   '
+def process_line(line, pad, homogenize_digits, no_punc, lowercase):
+    if no_punc:
+        line = re.sub(r'[^\s\w]', '', line)
+    if lowercase:
+        line = line.lower()
+    if homogenize_digits:
+        line = re.sub(r'[\d]+', '1', line)
+    line = line.strip()
+    if pad:
+         line = f'{PAD_CHAR}{PAD_CHAR}{PAD_CHAR}{line}{PAD_CHAR}{PAD_CHAR}{PAD_CHAR}'
 
-    return lines
+    return line
 
 def read_lines(in_file):
     """
@@ -112,14 +112,14 @@ def test_LM(in_file, out_file, LM, pad=DEFAULT_PAD, homogenize_digits=DEFAULT_HO
     """
     print("testing language models...")
     lines = read_lines(in_file)
-    lines = process_lines(lines, pad, homogenize_digits, no_punc, lowercase)
     output_str = ''
-    for line in lines:
+    for i in range(len(lines)):
+        line = process_line(lines[i], pad, homogenize_digits, no_punc, lowercase)
         if smooth_unseen:
             lang = classify_smooth_unseen(line, LM)
         else:
             lang = classify_ignore_unseen(line, LM)
-        output_str += f'{lang} {line}\n'
+        output_str += f'{lang} {lines[i]}\n'
     with open(out_file, "w") as f:
         f.write(output_str)
 
