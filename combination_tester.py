@@ -1,3 +1,5 @@
+# the purpose of this file is to try out different combinations of options, and to output the results
+
 import os
 from build_test_LM_funcs import build_LM, test_LM
 

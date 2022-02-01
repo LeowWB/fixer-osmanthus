@@ -85,6 +85,9 @@ def input_lines_to_train_set(lines, pad, homogenize_digits, no_punc, lowercase):
     return train_set
 
 def process_line(line, pad, homogenize_digits, no_punc, lowercase):
+    """
+    performs preprocessing for a single line, based on the provided options
+    """
     if no_punc:
         line = re.sub(r'[^\s\w]', '', line)
     if lowercase:
@@ -99,7 +102,7 @@ def process_line(line, pad, homogenize_digits, no_punc, lowercase):
 
 def read_lines(in_file):
     """
-    reads the lines from a file, removing whitespace including newline
+    reads the lines from a file, removing all whitespace (including newline)
     """
     with open(in_file, "r") as f:
         lines = f.readlines()
