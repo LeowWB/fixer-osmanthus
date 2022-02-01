@@ -10,7 +10,8 @@ import nltk
 from math import log
 
 COUNT_KEY = '_count' # for dictionaries
-PAD_CHAR = '@' # we use this character to pad the start and end of each string
+PAD_FRONT_CHAR = '@' # we use this character to pad the start of each string
+PAD_END_CHAR = '^'
 OTHER_STRING = 'other' # classify as other
 OTHER_THRESHOLD = 0.5 # threshold for classifying as other
 EPSILON = 0.00001 # avoid division by 0
@@ -92,7 +93,7 @@ def process_line(line, pad, homogenize_digits, no_punc, lowercase):
         line = re.sub(r'[\d]+', '1', line)
     line = line.strip()
     if pad:
-         line = f'{PAD_CHAR}{PAD_CHAR}{PAD_CHAR}{line}{PAD_CHAR}{PAD_CHAR}{PAD_CHAR}'
+         line = f'{PAD_FRONT_CHAR}{PAD_FRONT_CHAR}{PAD_FRONT_CHAR}{line}{PAD_END_CHAR}{PAD_END_CHAR}{PAD_END_CHAR}'
 
     return line
 
